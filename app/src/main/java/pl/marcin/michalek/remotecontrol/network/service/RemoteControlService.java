@@ -16,8 +16,8 @@ public interface RemoteControlService {
     void sendSpaceClick(Callback<ResponseDto> response);
 
     @POST(ServicePaths.CONTROL_PREV)
-    void sendPrev(Callback<ResponseDto> response);
+    void sendRewindClick(Callback<ResponseDto> response);
 
     @POST(ServicePaths.CONTROL_NEXT)
-    void sendNext(Callback<ResponseDto> response);
+    void sendForwardClick(Callback<ResponseDto> response);
 }
