@@ -1,66 +1,35 @@
 package pl.marcin.michalek.remotecontrol.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ProgressBar;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 
 import pl.marcin.michalek.remotecontrol.R;
-import pl.marcin.michalek.remotecontrol.network.ServiceProvider;
-import pl.marcin.michalek.remotecontrol.network.service.RemoteControlService;
-import pl.michalek.marcin.remotecontrol.dto.ResponseDto;
+import pl.marcin.michalek.remotecontrol.fragment.EnterIpFragment;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * MainActivity responsible for displaying RemoteControl and doing network requests
  * after buttons clicks.
  */
-public class MainActivity extends AppCompatActivity implements Callback<ResponseDto> {
-
-    @Bind(R.id.pbProgress)
-    ProgressBar progressBar;
-
-    RemoteControlService remoteControlService =
-        ServiceProvider.provideService(RemoteControlService.class);
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        replaceFragment(new EnterIpFragment());
     }
 
-    @OnClick(R.id.btnRewind)
-    void sendRewindToServer() {
-        progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendRewindClick(this);
-    }
+    public void replaceFragment(Fragment fragment) {
+        getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.flFragmentContainer, fragment)
+            .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right,
+                                 android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+            .commit();
 
-    @OnClick(R.id.btnSpace)
-    void sendSpaceToServer() {
-        progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendSpaceClick(this);
-    }
-
-    @OnClick(R.id.btnForward)
-    void sendForwardToServer() {
-        progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendForwardClick(this);
-    }
-
-    @Override
-    public void success(ResponseDto responseDto, Response response) {
-        progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void failure(RetrofitError error) {
-        progressBar.setVisibility(View.GONE);
     }
 }

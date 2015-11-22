@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="@string/servers_ip"
+              android:layout_margin="8dp"/>
+
+    <EditText android:id="@+id/etServersIp"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:inputType="phone"
+              android:singleLine="true"/>
+
+    <LinearLayout android:id="@+id/llLastUsed"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical">
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="@string/last_used"/>
+
+        <Button android:id="@+id/btnLastUsedIp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="192.168.0.249"/>
+
+    </LinearLayout>
+
+    <Button
+            android:id="@+id/btnNext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/next"
+            android:layout_marginTop="8dp"/>
+
+</LinearLayout>

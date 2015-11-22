@@ -3,4 +3,7 @@
     <string name="rewind">Rewind</string>
     <string name="space">Space</string>
     <string name="forward">Forward</string>
+    <string name="servers_ip">Server\'s IP address</string>
+    <string name="last_used">Last used</string>
+    <string name="next">Next</string>
 </resources>
