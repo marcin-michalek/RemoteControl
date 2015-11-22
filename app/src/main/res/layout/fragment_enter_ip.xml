@@ -16,6 +16,18 @@
               android:inputType="phone"
               android:singleLine="true"/>
 
+    <TextView android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:text="@string/port"
+               android:layout_margin="8dp"/>
+
+     <EditText android:id="@+id/etServersPort"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:inputType="number"
+               android:text="@string/port_8080"
+               android:singleLine="true"/>
+
     <LinearLayout android:id="@+id/llLastUsed"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"

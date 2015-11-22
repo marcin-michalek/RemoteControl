@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import pl.marcin.michalek.remotecontrol.R;
+import pl.marcin.michalek.remotecontrol.network.ServicePaths;
 import pl.marcin.michalek.remotecontrol.network.ServiceProvider;
 import pl.marcin.michalek.remotecontrol.network.service.RemoteControlService;
 import pl.michalek.marcin.remotecontrol.dto.ResponseDto;
@@ -29,6 +31,9 @@ public class ControlsFragment extends Fragment implements Callback<ResponseDto> 
     @Bind(R.id.pbProgress)
     ProgressBar progressBar;
 
+    @Bind(R.id.tvServerAddress)
+    TextView serversAddress;
+
     RemoteControlService remoteControlService =
         ServiceProvider.provideService(RemoteControlService.class);
 
@@ -38,6 +43,7 @@ public class ControlsFragment extends Fragment implements Callback<ResponseDto> 
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_controls, container, false);
         ButterKnife.bind(this, view);
+        serversAddress.setText(ServicePaths.ROOT_REST_URL);
         return view;
     }
 

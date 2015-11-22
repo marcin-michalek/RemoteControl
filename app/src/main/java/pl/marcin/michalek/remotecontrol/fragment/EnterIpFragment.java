@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import pl.marcin.michalek.remotecontrol.R;
 import pl.marcin.michalek.remotecontrol.activity.MainActivity;
+import pl.marcin.michalek.remotecontrol.network.ServicePaths;
 import pl.marcin.michalek.remotecontrol.preferences.Prefs;
 
 import butterknife.Bind;
@@ -25,6 +26,9 @@ public class EnterIpFragment extends Fragment {
 
     @Bind(R.id.etServersIp)
     EditText serversIp;
+
+    @Bind(R.id.etServersPort)
+    EditText serversPort;
 
     @Bind(R.id.llLastUsed)
     LinearLayout lastUsedIpLayout;
@@ -59,6 +63,8 @@ public class EnterIpFragment extends Fragment {
 
     @OnClick(R.id.btnNext)
     void saveIpAndGoToControlsFragment() {
+        ServicePaths.ROOT_REST_URL =
+            "http://" + serversIp.getText().toString() + ":" + serversPort.getText().toString();
         Prefs.putLastUsedIp(getActivity(), serversIp.getText().toString());
         ((MainActivity) getActivity()).replaceFragment(new ControlsFragment());
     }
