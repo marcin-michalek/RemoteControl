@@ -12,10 +12,21 @@ android {
         versionName "1.0"
     }
 
+    signingConfigs {
+        release {
+            storeFile file('../remote_control_release.keystore')
+            storePassword 'marcin894693'
+            keyAlias 'remote_control_release'
+            keyPassword 'marcin894693'
+        }
+    }
+
     buildTypes {
         release {
+            debuggable false
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 
