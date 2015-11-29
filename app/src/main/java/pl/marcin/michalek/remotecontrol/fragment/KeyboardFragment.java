@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import pl.marcin.michalek.remotecontrol.R;
+import pl.marcin.michalek.remotecontrol.activity.MainActivity;
 import pl.marcin.michalek.remotecontrol.network.ServicePaths;
 import pl.marcin.michalek.remotecontrol.network.ServiceProvider;
 import pl.marcin.michalek.remotecontrol.network.service.RemoteControlService;
@@ -26,7 +30,7 @@ import retrofit.client.Response;
  * MainActivity responsible for displaying RemoteControl and doing network requests
  * after buttons clicks.
  */
-public class ControlsFragment extends Fragment implements Callback<ResponseDto> {
+public class KeyboardFragment extends Fragment implements Callback<ResponseDto> {
 
     @Bind(R.id.pbProgress)
     ProgressBar progressBar;
@@ -44,6 +48,7 @@ public class ControlsFragment extends Fragment implements Callback<ResponseDto> 
         View view = inflater.inflate(R.layout.fragment_controls, container, false);
         ButterKnife.bind(this, view);
         serversAddress.setText(ServicePaths.ROOT_REST_URL);
+        setHasOptionsMenu(true);
         return view;
     }
 
@@ -73,5 +78,22 @@ public class ControlsFragment extends Fragment implements Callback<ResponseDto> 
     @Override
     public void failure(RetrofitError error) {
         progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_with_mouse_toggle, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_mouse:
+                ((MainActivity) getActivity()).replaceFragment(new MouseFragment());
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

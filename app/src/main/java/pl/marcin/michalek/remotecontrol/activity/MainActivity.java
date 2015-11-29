@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(new EnterIpFragment());
     }
 
+    // TODO search for existing fragments instead of creating new fragments during replace
     public void replaceFragment(Fragment fragment) {
         getSupportFragmentManager()
             .beginTransaction()

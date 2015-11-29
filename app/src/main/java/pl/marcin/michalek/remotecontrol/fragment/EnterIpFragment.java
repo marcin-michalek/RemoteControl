@@ -66,6 +66,6 @@ public class EnterIpFragment extends Fragment {
         ServicePaths.ROOT_REST_URL =
             "http://" + serversIp.getText().toString() + ":" + serversPort.getText().toString();
         Prefs.putLastUsedIp(getActivity(), serversIp.getText().toString());
-        ((MainActivity) getActivity()).replaceFragment(new ControlsFragment());
+        ((MainActivity) getActivity()).replaceFragment(new KeyboardFragment());
     }
 }

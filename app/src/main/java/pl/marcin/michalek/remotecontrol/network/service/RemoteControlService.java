@@ -7,7 +7,7 @@ import retrofit.Callback;
 import retrofit.http.POST;
 
 /**
- * MainActivity responsible for displaying remote control and doing network requests
+ * Responsible for displaying remote control and doing network requests
  * after buttons click.
  */
 public interface RemoteControlService {
