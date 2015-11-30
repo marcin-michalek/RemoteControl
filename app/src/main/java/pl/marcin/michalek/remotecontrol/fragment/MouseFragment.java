@@ -1,7 +1,7 @@
 package pl.marcin.michalek.remotecontrol.fragment;
 
-import android.graphics.Point;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,22 +11,35 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import pl.marcin.michalek.remotecontrol.R;
 import pl.marcin.michalek.remotecontrol.activity.MainActivity;
-import pl.marcin.michalek.remotecontrol.util.PointUtil;
+import pl.marcin.michalek.remotecontrol.network.ServiceProvider;
+import pl.marcin.michalek.remotecontrol.network.service.RemoteControlService;
+import pl.michalek.marcin.remotecontrol.dto.MouseMoveParamsDto;
+import pl.michalek.marcin.remotecontrol.dto.PointDto;
+import pl.michalek.marcin.remotecontrol.dto.ResponseDto;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnTouch;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
- * First skeleton of MouseFragment. Will be cleaned and improved in next commit.
+ * Fragment responsible for displaying mouse and buttons and for reacting to clicks and movement.
  */
-public class MouseFragment extends Fragment implements View.OnTouchListener {
+public class MouseFragment extends Fragment implements View.OnTouchListener, Callback<ResponseDto> {
 
-    Point down = null;
-    Point up = null;
+    private RemoteControlService remoteControlService =
+        ServiceProvider.provideService(RemoteControlService.class);
+    private MouseMoveParamsDto mouseMoveParamsDto = new MouseMoveParamsDto();
+
+    @Bind(R.id.prgProgress)
+    ProgressBar progressBar;
 
     @Nullable
     @Override
@@ -42,16 +55,37 @@ public class MouseFragment extends Fragment implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (MotionEvent.ACTION_DOWN == event.getActionMasked()) {
-            down = new Point((int) event.getX(), (int) event.getY());
+            mouseMoveParamsDto.setDown(new PointDto((int) event.getX(), (int) event.getY()));
+            mouseMoveParamsDto.setTimestampDown(SystemClock.uptimeMillis());
         } else if (MotionEvent.ACTION_UP == event.getActionMasked()) {
-            up = new Point((int) event.getX(), (int) event.getY());
-            Toast
-                .makeText(getActivity(),
-                          "Distance: " + PointUtil.distance(down, up) + " Angle: " + PointUtil
-                              .angleInDegrees(down, up),
-                          Toast.LENGTH_SHORT).show();
+            mouseMoveParamsDto.setUp(new PointDto((int) event.getX(), (int) event.getY()));
+            mouseMoveParamsDto.setTimestampUp(SystemClock.uptimeMillis());
+            sendMouseMoveToServer();
         }
         return true;
+    }
+
+    private void sendMouseMoveToServer() {
+        progressBar.setVisibility(View.VISIBLE);
+        remoteControlService.sendMouseMoveParams(mouseMoveParamsDto, this);
+    }
+
+    @OnClick(R.id.btnRight)
+    void sendRightClickToServer() {
+        progressBar.setVisibility(View.VISIBLE);
+        remoteControlService.sendRmbClick(this);
+    }
+
+    @OnClick(R.id.btnLeft)
+    void sendLeftClickToServer() {
+        progressBar.setVisibility(View.VISIBLE);
+        remoteControlService.sendLmbClick(this);
+    }
+
+    @OnClick(R.id.btnLeft2x)
+    void sendLeftClick2xToServer() {
+        progressBar.setVisibility(View.VISIBLE);
+        remoteControlService.sendLmb2xClick(this);
     }
 
     @Override
@@ -69,5 +103,15 @@ public class MouseFragment extends Fragment implements View.OnTouchListener {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void success(ResponseDto responseDto, Response response) {
+        progressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void failure(RetrofitError error) {
+        progressBar.setVisibility(View.GONE);
     }
 }

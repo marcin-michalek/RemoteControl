@@ -15,22 +15,22 @@
                   android:orientation="horizontal"
                   android:layout_alignParentBottom="true">
 
-        <Button android:id="@+id/bMouse2times"
+        <Button android:id="@+id/btnLeft2x"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:text="x2"
+                android:text="@string/left_x2"
                 android:layout_height="wrap_content"/>
 
-        <Button android:id="@+id/bLeft"
+        <Button android:id="@+id/btnLeft"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:text="Left"
+                android:text="@string/left"
                 android:layout_height="wrap_content"/>
 
-        <Button android:id="@+id/bRight"
+        <Button android:id="@+id/btnRight"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:text="Right"
+                android:text="@string/right"
                 android:layout_height="wrap_content"/>
     </LinearLayout>
 
@@ -39,4 +39,11 @@
           android:layout_above="@id/llButtons"
           android:layout_height="match_parent"
           android:background="@android:drawable/dialog_holo_light_frame"/>
+
+    <ProgressBar
+            android:id="@+id/prgProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone"/>
 </RelativeLayout>

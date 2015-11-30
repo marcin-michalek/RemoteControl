@@ -10,4 +10,7 @@
     <string name="port_8080">8080</string>
     <string name="title_keyboard">Keyboard</string>
     <string name="title_mouse">Mouse</string>
+    <string name="left_x2">Left x2</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
 </resources>

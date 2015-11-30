@@ -5,9 +5,18 @@ package pl.marcin.michalek.remotecontrol.network;
  */
 public final class ServicePaths {
 
-    public static String ROOT_REST_URL = "/** isSetInEnterIpFragment */";
-    public static final String CONTROL = "/control";
-    public static final String CONTROL_SPACE = CONTROL + "/space";
-    public static final String CONTROL_PREV = CONTROL + "/rewind";
-    public static final String CONTROL_NEXT = CONTROL + "/forward";
+    /** isSetInEnterIpFragment */
+    public static String ROOT_REST_URL = "";
+
+    // Rest of the service paths relative to ROOT REST URL
+    public static final String KEYBOARD = "/keyboard";
+    public static final String KEYBOARD_SPACE = KEYBOARD + "/space";
+    public static final String KEYBOARD_PREV = KEYBOARD + "/rewind";
+    public static final String KEYBOARD_NEXT = KEYBOARD + "/forward";
+
+    public static final String MOUSE = "/mouse";
+    public static final String MOUSE_MOVE = MOUSE + "/move";
+    public static final String MOUSE_LMB = MOUSE + "/lmb";
+    public static final String MOUSE_LMB2x = MOUSE + "/lmb2x";
+    public static final String MOUSE_RMB = MOUSE + "/rmb";
 }
