@@ -9,15 +9,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import pl.marcin.michalek.remotecontrol.BuildConfig;
 import pl.marcin.michalek.remotecontrol.R;
 import pl.marcin.michalek.remotecontrol.activity.MainActivity;
 import pl.marcin.michalek.remotecontrol.network.ServicePaths;
+import pl.marcin.michalek.remotecontrol.network.ServiceProvider;
+import pl.marcin.michalek.remotecontrol.network.service.ServerVersionService;
 import pl.marcin.michalek.remotecontrol.preferences.Prefs;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Fragment enabling user to enter and store his IP address.
@@ -35,6 +42,9 @@ public class EnterIpFragment extends Fragment {
 
     @Bind(R.id.btnLastUsedIp)
     Button lasedUsedIp;
+
+    ServerVersionService serverVersionService =
+        ServiceProvider.provideService(ServerVersionService.class);
 
     @Nullable
     @Override
@@ -62,7 +72,31 @@ public class EnterIpFragment extends Fragment {
     }
 
     @OnClick(R.id.btnNext)
-    void saveIpAndGoToControlsFragment() {
+    void showControlsFragmentIfServerVersionEqualsAppVersion() {
+        serverVersionService.getServerVersion(new Callback<Integer>() {
+            @Override
+            public void success(Integer integer, Response response) {
+                if (integer == BuildConfig.VERSION_CODE) {
+                    showControlsFragment();
+                } else if (integer < BuildConfig.VERSION_CODE) {
+                    Toast.makeText(getActivity(), "Update application from Google Play",
+                                   Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Download the latest version of server.",
+                                   Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+
+        showControlsFragment();
+    }
+
+    private void showControlsFragment() {
         ServicePaths.ROOT_REST_URL =
             "http://" + serversIp.getText().toString() + ":" + serversPort.getText().toString();
         Prefs.putLastUsedIp(getActivity(), serversIp.getText().toString());

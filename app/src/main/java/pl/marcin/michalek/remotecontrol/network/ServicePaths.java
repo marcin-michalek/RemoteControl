@@ -19,4 +19,8 @@ public final class ServicePaths {
     public static final String MOUSE_LMB = MOUSE + "/lmb";
     public static final String MOUSE_LMB2x = MOUSE + "/lmb2x";
     public static final String MOUSE_RMB = MOUSE + "/rmb";
+
+    public static final String SERVER = "/server";
+    public static final String SERVER_VERSION = SERVER + "/version";
+
 }
