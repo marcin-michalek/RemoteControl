@@ -5,9 +5,6 @@ package pl.marcin.michalek.remotecontrol.network;
  */
 public final class ServicePaths {
 
-    /** isSetInEnterIpFragment */
-    public static String ROOT_REST_URL = "";
-
     // Rest of the service paths relative to ROOT REST URL
     public static final String KEYBOARD = "/keyboard";
     public static final String KEYBOARD_SPACE = KEYBOARD + "/space";

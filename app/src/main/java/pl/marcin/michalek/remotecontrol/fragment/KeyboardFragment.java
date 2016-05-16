@@ -3,6 +3,7 @@ package pl.marcin.michalek.remotecontrol.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,17 +15,18 @@ import android.widget.TextView;
 
 import pl.marcin.michalek.remotecontrol.R;
 import pl.marcin.michalek.remotecontrol.activity.MainActivity;
-import pl.marcin.michalek.remotecontrol.network.ServicePaths;
+import pl.marcin.michalek.remotecontrol.config.Constants;
 import pl.marcin.michalek.remotecontrol.network.ServiceProvider;
 import pl.marcin.michalek.remotecontrol.network.service.RemoteControlService;
+import pl.marcin.michalek.remotecontrol.preferences.Prefs;
 import pl.michalek.marcin.remotecontrol.dto.ResponseDto;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * MainActivity responsible for displaying RemoteControl and doing network requests
@@ -38,8 +40,7 @@ public class KeyboardFragment extends Fragment implements Callback<ResponseDto> 
     @Bind(R.id.tvServerAddress)
     TextView serversAddress;
 
-    RemoteControlService remoteControlService =
-        ServiceProvider.provideService(RemoteControlService.class);
+    RemoteControlService remoteControlService = ServiceProvider.provideRemoteControlService();
 
     @Nullable
     @Override
@@ -47,7 +48,7 @@ public class KeyboardFragment extends Fragment implements Callback<ResponseDto> 
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_controls, container, false);
         ButterKnife.bind(this, view);
-        serversAddress.setText(ServicePaths.ROOT_REST_URL);
+        serversAddress.setText(Prefs.getLastUsedIp(getContext()));
         setHasOptionsMenu(true);
         return view;
     }
@@ -55,29 +56,19 @@ public class KeyboardFragment extends Fragment implements Callback<ResponseDto> 
     @OnClick(R.id.btnRewind)
     void sendRewindToServer() {
         progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendRewindClick(this);
+        remoteControlService.sendRewindClick().enqueue(this);
     }
 
     @OnClick(R.id.btnSpace)
     void sendSpaceToServer() {
         progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendSpaceClick(this);
+        remoteControlService.sendSpaceClick().enqueue(this);
     }
 
     @OnClick(R.id.btnForward)
     void sendForwardToServer() {
         progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendForwardClick(this);
-    }
-
-    @Override
-    public void success(ResponseDto responseDto, Response response) {
-        progressBar.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void failure(RetrofitError error) {
-        progressBar.setVisibility(View.GONE);
+        remoteControlService.sendForwardClick().enqueue(this);
     }
 
     @Override
@@ -95,5 +86,18 @@ public class KeyboardFragment extends Fragment implements Callback<ResponseDto> 
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onResponse(Response<ResponseDto> response, Retrofit retrofit) {
+        if (response.isSuccess()) {
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onFailure(Throwable t) {
+        Log.e(Constants.LOG_TAG, "Error in sending keyboard control data: " + t.getMessage());
+        progressBar.setVisibility(View.GONE);
     }
 }

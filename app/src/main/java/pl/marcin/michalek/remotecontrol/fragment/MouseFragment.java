@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 
 import pl.marcin.michalek.remotecontrol.R;
 import pl.marcin.michalek.remotecontrol.activity.MainActivity;
+import pl.marcin.michalek.remotecontrol.config.Constants;
 import pl.marcin.michalek.remotecontrol.network.ServiceProvider;
 import pl.marcin.michalek.remotecontrol.network.service.RemoteControlService;
 import pl.michalek.marcin.remotecontrol.dto.MouseMoveParamsDto;
@@ -26,8 +28,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Fragment responsible for displaying mouse and buttons and for reacting to clicks and movement.
@@ -35,7 +37,7 @@ import retrofit.client.Response;
 public class MouseFragment extends Fragment implements View.OnTouchListener, Callback<ResponseDto> {
 
     private RemoteControlService remoteControlService =
-        ServiceProvider.provideService(RemoteControlService.class);
+        ServiceProvider.provideRemoteControlService();
     private MouseMoveParamsDto mouseMoveParamsDto = new MouseMoveParamsDto();
 
     @Bind(R.id.prgProgress)
@@ -67,25 +69,25 @@ public class MouseFragment extends Fragment implements View.OnTouchListener, Cal
 
     private void sendMouseMoveToServer() {
         progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendMouseMoveParams(mouseMoveParamsDto, this);
+        remoteControlService.sendMouseMoveParams(mouseMoveParamsDto).enqueue(this);
     }
 
     @OnClick(R.id.btnRight)
     void sendRightClickToServer() {
         progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendRmbClick(this);
+        remoteControlService.sendRmbClick().enqueue(this);
     }
 
     @OnClick(R.id.btnLeft)
     void sendLeftClickToServer() {
         progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendLmbClick(this);
+        remoteControlService.sendLmbClick().enqueue(this);
     }
 
     @OnClick(R.id.btnLeft2x)
     void sendLeftClick2xToServer() {
         progressBar.setVisibility(View.VISIBLE);
-        remoteControlService.sendLmb2xClick(this);
+        remoteControlService.sendLmb2xClick().enqueue(this);
     }
 
     @Override
@@ -106,12 +108,15 @@ public class MouseFragment extends Fragment implements View.OnTouchListener, Cal
     }
 
     @Override
-    public void success(ResponseDto responseDto, Response response) {
-        progressBar.setVisibility(View.GONE);
+    public void onResponse(Response<ResponseDto> response, Retrofit retrofit) {
+        if (response.isSuccess()) {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override
-    public void failure(RetrofitError error) {
+    public void onFailure(Throwable t) {
+        Log.e(Constants.LOG_TAG, "Error in sending mouse control data: " + t.getMessage());
         progressBar.setVisibility(View.GONE);
     }
 }

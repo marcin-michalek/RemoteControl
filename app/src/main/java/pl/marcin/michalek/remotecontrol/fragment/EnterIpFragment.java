@@ -3,6 +3,7 @@ package pl.marcin.michalek.remotecontrol.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,17 +15,16 @@ import android.widget.Toast;
 import pl.marcin.michalek.remotecontrol.BuildConfig;
 import pl.marcin.michalek.remotecontrol.R;
 import pl.marcin.michalek.remotecontrol.activity.MainActivity;
-import pl.marcin.michalek.remotecontrol.network.ServicePaths;
+import pl.marcin.michalek.remotecontrol.config.Constants;
 import pl.marcin.michalek.remotecontrol.network.ServiceProvider;
-import pl.marcin.michalek.remotecontrol.network.service.ServerVersionService;
 import pl.marcin.michalek.remotecontrol.preferences.Prefs;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * Fragment enabling user to enter and store his IP address.
@@ -42,9 +42,6 @@ public class EnterIpFragment extends Fragment {
 
     @Bind(R.id.btnLastUsedIp)
     Button lasedUsedIp;
-
-    ServerVersionService serverVersionService =
-        ServiceProvider.provideService(ServerVersionService.class);
 
     @Nullable
     @Override
@@ -71,34 +68,41 @@ public class EnterIpFragment extends Fragment {
         }
     }
 
+    private void configureRetrofit() {
+        String baseUrl =
+            "http://" + serversIp.getText().toString() + ":" + serversPort.getText().toString();
+        ServiceProvider.buildRetrofit(baseUrl);
+    }
+
     @OnClick(R.id.btnNext)
     void showControlsFragmentIfServerVersionEqualsAppVersion() {
-        serverVersionService.getServerVersion(new Callback<Integer>() {
+        configureRetrofit();
+
+        ServiceProvider.provideServerVersionService()
+            .getServerVersion().enqueue(new Callback<Integer>() {
             @Override
-            public void success(Integer integer, Response response) {
-                if (integer == BuildConfig.VERSION_CODE) {
-                    showControlsFragment();
-                } else if (integer < BuildConfig.VERSION_CODE) {
-                    Toast.makeText(getActivity(), "Update application from Google Play",
-                                   Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getActivity(), "Download the latest version of server.",
-                                   Toast.LENGTH_LONG).show();
+            public void onResponse(Response<Integer> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    if (response.body() == BuildConfig.VERSION_CODE) {
+                        showControlsFragment();
+                    } else if (response.body() < BuildConfig.VERSION_CODE) {
+                        Toast.makeText(getActivity(), "Update application from Google Play",
+                                       Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), "Download the latest version of server.",
+                                       Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
             @Override
-            public void failure(RetrofitError error) {
-
+            public void onFailure(Throwable t) {
+                Log.e(Constants.LOG_TAG, "Error in getting server version: " + t.getMessage());
             }
         });
-
-        showControlsFragment();
     }
 
     private void showControlsFragment() {
-        ServicePaths.ROOT_REST_URL =
-            "http://" + serversIp.getText().toString() + ":" + serversPort.getText().toString();
         Prefs.putLastUsedIp(getActivity(), serversIp.getText().toString());
         ((MainActivity) getActivity()).replaceFragment(new KeyboardFragment());
     }

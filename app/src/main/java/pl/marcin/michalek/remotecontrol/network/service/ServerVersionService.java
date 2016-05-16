@@ -1,8 +1,9 @@
 package pl.marcin.michalek.remotecontrol.network.service;
 
+
 import pl.marcin.michalek.remotecontrol.network.ServicePaths;
 
-import retrofit.Callback;
+import retrofit.Call;
 import retrofit.http.GET;
 
 /**
@@ -11,5 +12,5 @@ import retrofit.http.GET;
 public interface ServerVersionService {
 
     @GET(ServicePaths.SERVER_VERSION)
-    void getServerVersion(Callback<Integer> serverVersion);
+    Call<Integer> getServerVersion();
 }
